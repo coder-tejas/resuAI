@@ -34,27 +34,34 @@ with st.expander("Step 1: Job Description", expanded=True):
         role = st.text_input("Role Title", placeholder="e.g., Backend Engineer")
 
 with st.expander("Step 2: Projects", expanded=True):
-    uploaded_files = st.file_uploader("Upload project .md files", type="md", accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Upload project files (.md or .txt)", type=["md", "txt"], accept_multiple_files=True)
     
     projects = []
     if uploaded_files:
         for f in uploaded_files:
             content = f.read().decode()
-            lines = content.split('\n---\n')
-            name = f.name.replace('.md', '')
+            file_ext = f.name.split('.')[-1].lower()
+            
+            name = f.name.rsplit('.', 1)[0]
             tech = ''
             description = content
             
-            if len(lines) > 1:
-                frontmatter = lines[0]
-                desc = '\n---\n'.join(lines[1:])
-                
-                for line in frontmatter.split('\n'):
-                    if line.startswith('name:'):
-                        name = line.replace('name:', '').strip()
-                    elif line.startswith('tech:'):
-                        tech = line.replace('tech:', '').strip()
-                description = desc.strip()
+            if file_ext == 'md':
+                lines = content.split('\n---\n')
+                if len(lines) > 1:
+                    frontmatter = lines[0]
+                    desc = '\n---\n'.join(lines[1:])
+                    
+                    for line in frontmatter.split('\n'):
+                        if line.startswith('name:'):
+                            name = line.replace('name:', '').strip()
+                        elif line.startswith('tech:'):
+                            tech = line.replace('tech:', '').strip()
+                    description = desc.strip()
+            else:
+                first_line = content.split('\n')[0].strip()
+                if first_line and len(first_line) < 50:
+                    tech = first_line
             
             projects.append({"name": name, "tech": tech, "description": description})
         
