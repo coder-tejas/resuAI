@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-dotenv
+pymongo
+openrouter
+httpx
+pydantic
+python-multipart
+jinja2
+scikit-learn
+streamlit
